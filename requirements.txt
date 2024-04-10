@@ -1,0 +1,9 @@
+#brew install ffmpeg
+#brew install libsndfile
+tensorflow==2.15
+#-macos
+#tensorflow-metal
+numpy
+opencv-python
+mediapipe-silicon
+librosa
