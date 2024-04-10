@@ -4,7 +4,6 @@ from video_processor import VideoProcessor
 from utils import Utils
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 import os
 import librosa
 import soundfile as sf
@@ -18,18 +17,11 @@ from tensorflow.keras.models import load_model
 
 
 def main():
-    base_path = '.' #f'/content/drive/MyDrive/d2m'
-    raw_input_path = f'{base_path}/input/dataset/raw'
-
-    # Initializes VideoProcessor and AudioProcessor for processing raw dataset
-    video_processor = VideoProcessor()
-    audio_processor = AudioProcessor()
-
     vae = load_model('m.snapshots/snapshot-midi/vae.h5')
     vae.summary()
-    output_path = Utils.create_timestamped_output_folder(f'{base_path}/output')
-    video_data = Utils.load_data(f'{base_path}/input/dataset/raw', video_processor, audio_processor)
 
+    video_processor = VideoProcessor()
+    audio_processor = AudioProcessor()
 
     # Initialize the video capture object
     cap = cv2.VideoCapture(0)  # Use 0 for the default webcam
@@ -49,8 +41,7 @@ def main():
                 print("Failed to capture frame. Exiting...")
                 break
 
-            # Display the resulting frame
-            cv2.imshow('Frame', frame)
+            #cv2.imshow('Frame', frame)
 
             # Add the frame to our queue
             processed_frames.append(video_processor.process_frame(frame))
@@ -68,16 +59,14 @@ def main():
 
                 x__, _ = vae.predict([audio_test, video_test])
                 x__ = audio_processor.features_to_audio(x__)
-                print("Converted ")
+                print("Converted - we need to convert it to midi and render video in live")
 
             # Break the loop when 'q' is pressed
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
     finally:
-        # When everything done, release the capture and destroy all OpenCV windows
         cap.release()
         cv2.destroyAllWindows()
-
 
 
 main()
